@@ -19,6 +19,10 @@ class API(object):
              cache=None, secure=False, api_root='/1', search_root='',
             retry_count=0, retry_delay=0, retry_errors=None,
             parser=None):
+        ##
+        self.queries_allowed = None 
+        self.remaining_queries = None
+        ## 
         self.auth = auth_handler
         self.host = host
         self.search_host = search_host

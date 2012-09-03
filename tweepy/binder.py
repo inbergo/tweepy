@@ -145,6 +145,8 @@ def bind_api(**config):
                 try:
                     conn.request(self.method, url, headers=self.headers, body=self.post_data)
                     resp = conn.getresponse()
+                    self.api.queries_allowed = resp.msg.get('x-ratelimit-limit') 
+                    self.api.remaining_queries = resp.msg.get('x-ratelimit-remaining')
                 except Exception, e:
                     raise TweepError('Failed to send request: %s' % e)
 
