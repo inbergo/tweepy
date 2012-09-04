@@ -7,12 +7,12 @@ import urllib
 import time
 import re
 
-from tweepy.error import TweepError
+from tweepy.error import \
+  TweepError, AccessDenied, DoesNotExist, LimitExceeded, InvalidCredentials
 from tweepy.utils import convert_to_utf8_str
 from tweepy.models import Model
 
 re_path_template = re.compile('{\w+}')
-
 
 def bind_api(**config):
 
@@ -26,6 +26,7 @@ def bind_api(**config):
         require_auth = config.get('require_auth', False)
         search_api = config.get('search_api', False)
         use_cache = config.get('use_cache', True)
+        error_dict = config.get('error_dict', None)
 
         def __init__(self, api, args, kargs):
             # If authentication is required and no credentials
@@ -184,8 +185,18 @@ def bind_api(**config):
     def _call(api, *args, **kargs):
 
         method = APIMethod(api, args, kargs)
-        return method.execute()
-
+        try:
+            rv = method.execute()
+        except Exception, e:
+            if isinstance(e, TweepError):
+                if 'api' == e.response.getheader('X-RateLimit-Class'): # check that we are authorised
+                    raise InvalidCredentials(e.reason, e.response)
+                if int(e.response.getheader('X-RateLimit-Remaining', 1)) <= 0:  # have no queries left
+                    raise LimitExceeded(e.reason, e.response)
+                if method.error_dict is not None: 
+                    raise method.error_dict.get(e.response.status, e.__class__)(e.reason, e.response)
+            raise e
+        return rv
 
     # Set pagination mode
     if 'cursor' in APIMethod.allowed_param:
@@ -194,4 +205,3 @@ def bind_api(**config):
         _call.pagination_mode = 'page'
 
     return _call
-

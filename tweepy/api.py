@@ -6,10 +6,9 @@ import os
 import mimetypes
 
 from tweepy.binder import bind_api
-from tweepy.error import TweepError
+from tweepy.error import TweepError, DoesNotExist, AccessDenied
 from tweepy.parsers import ModelParser
 from tweepy.utils import list_to_csv
-
 
 class API(object):
     """Twitter API"""
@@ -127,7 +126,8 @@ class API(object):
     get_status = bind_api(
         path = '/statuses/show.json',
         payload_type = 'status',
-        allowed_param = ['id']
+        allowed_param = ['id'],
+        error_dict = {404: DoesNotExist}
     )
 
     """ statuses/update """
@@ -169,7 +169,8 @@ class API(object):
     get_user = bind_api(
         path = '/users/show.json',
         payload_type = 'user',
-        allowed_param = ['id', 'user_id', 'screen_name']
+        allowed_param = ['id', 'user_id', 'screen_name'],
+        error_dict = {403: AccessDenied, 404: DoesNotExist}
     )
 
     """ Perform bulk look up of users from user ID or screenname """
@@ -180,6 +181,7 @@ class API(object):
         path = '/users/lookup.json',
         payload_type = 'user', payload_list = True,
         allowed_param = ['user_id', 'screen_name'],
+        error_dict = {404: DoesNotExist}
     )
 
     """ Get the authenticated user """
@@ -321,7 +323,8 @@ class API(object):
     followers_ids = bind_api(
         path = '/followers/ids.json',
         payload_type = 'ids',
-        allowed_param = ['id', 'user_id', 'screen_name', 'cursor']
+        allowed_param = ['id', 'user_id', 'screen_name', 'cursor'],
+        error_dict = {401: DoesNotExist}
     )
 
     """ account/verify_credentials """

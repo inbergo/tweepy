@@ -1,5 +1,7 @@
 *.pyc
 *.swp
+.project
+.pydevproject
 build/
 dist/
 tweepy.egg-info/

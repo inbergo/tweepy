@@ -8,7 +8,19 @@ class TweepError(Exception):
     def __init__(self, reason, response=None):
         self.reason = unicode(reason)
         self.response = response
+        self.original_reason = reason
 
     def __str__(self):
         return self.reason
 
+class AccessDenied(TweepError):
+    pass
+
+class DoesNotExist(TweepError):
+    pass
+
+class LimitExceeded(TweepError):
+    pass
+
+class InvalidCredentials(TweepError):
+    pass
