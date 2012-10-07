@@ -188,7 +188,7 @@ def bind_api(**config):
         try:
             rv = method.execute()
         except Exception, e:
-            if isinstance(e, TweepError):
+            if isinstance(e, TweepError) and e.response is not None:
                 if 'api' == e.response.getheader('X-RateLimit-Class'): # check that we are authorised
                     raise InvalidCredentials(e.reason, e.response)
                 if int(e.response.getheader('X-RateLimit-Remaining', 1)) <= 0:  # have no queries left

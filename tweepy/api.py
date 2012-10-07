@@ -302,7 +302,8 @@ class API(object):
     friends_ids = bind_api(
         path = '/friends/ids.json',
         payload_type = 'ids',
-        allowed_param = ['id', 'user_id', 'screen_name', 'cursor']
+        allowed_param = ['id', 'user_id', 'screen_name', 'cursor'],
+        error_dict = {401: AccessDenied}
     )
 
     """ friendships/incoming """
@@ -324,7 +325,7 @@ class API(object):
         path = '/followers/ids.json',
         payload_type = 'ids',
         allowed_param = ['id', 'user_id', 'screen_name', 'cursor'],
-        error_dict = {401: DoesNotExist}
+        error_dict = {401: AccessDenied}
     )
 
     """ account/verify_credentials """
