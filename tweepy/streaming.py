@@ -14,8 +14,7 @@ from tweepy.error import TweepError
 from tweepy.utils import import_simplejson, urlencode_noplus
 json = import_simplejson()
 
-STREAM_VERSION = 1
-
+STREAM_VERSION = '1.1'
 
 class StreamListener(object):
 
@@ -213,7 +212,7 @@ class Stream(object):
         self.headers['Content-type'] = "application/x-www-form-urlencoded"
         if self.running:
             raise TweepError('Stream object already connected!')
-        self.url = '/%i/statuses/filter.json?delimited=length' % STREAM_VERSION
+        self.url = '/%s/statuses/filter.json?delimited=length' % STREAM_VERSION
         if follow:
             self.parameters['follow'] = ','.join(map(str, follow))
         if track:
