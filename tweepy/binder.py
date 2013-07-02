@@ -191,7 +191,11 @@ def bind_api(**config):
             if isinstance(e, TweepError) and e.response is not None:
                 if 'api' == e.response.getheader('X-RateLimit-Class'): # check that we are authorised
                     raise InvalidCredentials(e.reason, e.response)
-                if int(e.response.getheader('X-RateLimit-Remaining', 1)) <= 0:  # have no queries left
+                if (int(e.response.getheader('X-RateLimit-Remaining', 1)) <= 0  # have no queries left
+                    or (    isinstance(e.original_reason, list)
+                        and isinstance(e.original_reason[0], dict)
+                        and e.original_reason[0].get('code', -1) == 88
+                        )):
                     raise LimitExceeded(e.reason, e.response)
                 if method.error_dict is not None: 
                     raise method.error_dict.get(e.response.status, e.__class__)(e.reason, e.response)
